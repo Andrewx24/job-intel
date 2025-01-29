@@ -1,7 +1,7 @@
 // components/Header.tsx
 import Link from "next/link";
 import { Button } from "./ui/button";
-
+import { ModeToggle } from "./ModeToggle";
 const Header = () => {
   return (
     <header className="border-b">
@@ -16,7 +16,13 @@ const Header = () => {
           <Link href="/people" className="hover:text-gray-600 transition-colors">
             People
           </Link>
-          <Button variant="outline">Sign In</Button>
+          <Link href="/signin">
+          <Button variant="outline">
+            Sign In
+
+            </Button>
+            </Link>
+          <ModeToggle />
         </nav>
       </div>
     </header>
