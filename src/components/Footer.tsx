@@ -1,4 +1,6 @@
 // components/Footer.tsx
+import Link from "next/link";
+
 const Footer = () => {
   return (
     <footer className="border-t py-8 mt-auto">
@@ -29,8 +31,12 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2 text-sm">
+              <Link href="/privacypolicy">
               <li>Privacy Policy</li>
+              </Link>
+              <Link href="/termsofservice">
               <li>Terms of Service</li>
+              </Link>
             </ul>
           </div>
         </div>
