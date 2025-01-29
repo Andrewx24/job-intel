@@ -30,6 +30,8 @@ export interface Person {
   title: string;
   companyId: string;
   company: Company;
+  imageUrl?: string;
+  bio?: string;
   email: string;
   emailStatus: 'verified' | 'unverified' | 'invalid';
   socialProfiles: {

@@ -1,5 +1,5 @@
 // app/page.tsx
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { 
@@ -12,7 +12,7 @@ import {
   Mail,
   MessageSquare
 } from 'lucide-react';
-
+import { USMap } from '@/components/us-map';
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -78,79 +78,84 @@ export default function Home() {
       </section>
 
       {/* Location Coverage - Updated for job seekers */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-1">
-                <h2 className="text-3xl font-bold mb-6 dark:text-white">
-                  Find Opportunities Anywhere in the US
-                </h2>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">
-                  Whether you&apos;re looking to work remotely or relocate, our platform helps you discover 
-                  companies and connections across all 50 states. Find opportunities that match your 
-                  location preferences.
-                </p>
-                <ul className="space-y-4">
-                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                    <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <span>Remote and local opportunities</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                    <LineChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <span>Growing companies actively hiring</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                    <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <span>Direct contact with decision makers</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="flex-1">
-                <div className="relative h-64 w-full">
-                  <Image 
-                    src="/api/placeholder/500/400"
-                    alt="US Coverage Map"
-                    className="rounded-lg shadow-lg dark:opacity-80"
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section - Enhanced for networking */}
-      <section className="py-16 bg-blue-600 dark:bg-blue-800 text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">
-              Ready to Take Control of Your Career?
+     
+  {/* Location Coverage section - Updated with USMap */}
+  <section className="py-16 bg-gray-50 dark:bg-gray-800">
+    <div className="container mx-auto px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center gap-8">
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold mb-6 dark:text-white">
+              Find Opportunities Anywhere in the US
             </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Join thousands of professionals who are building meaningful connections and finding 
-              their dream roles through direct company engagement.
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              Whether you&apos;re looking to work remotely or relocate, our platform helps you discover 
+              companies and connections across all 50 states. Find opportunities that match your 
+              location preferences.
             </p>
-            <div className="flex gap-4 justify-center">
-              <Link href="/companies">
-                <Button size="lg" variant="secondary" className="gap-2">
-                  <Building2 className="w-4 h-4" />
-                  Explore Companies
-                </Button>
-              </Link>
-              <Link href="/people">
-                <Button size="lg" variant="outline" className="gap-2 border-white text-white hover:bg-white/10">
-                  <Users className="w-4 h-4" />
-                  Find Connections
-                </Button>
-              </Link>
+            <ul className="space-y-4">
+              <li className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span>Remote and local opportunities</span>
+              </li>
+              <li className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                <LineChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span>Growing companies actively hiring</span>
+              </li>
+              <li className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span>Direct contact with decision makers</span>
+              </li>
+            </ul>
+          </div>
+          <div className="flex-1">
+            <div className="relative h-64 w-full rounded-lg shadow-lg overflow-hidden">
+              <div className="absolute inset-0 bg-white dark:bg-gray-800">
+                <USMap />
+              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
+  </section>
+
+  {/* CTA Section */}
+<section className="bg-[#4F46E5] py-20">
+  <div className="container mx-auto px-4">
+    <div className="max-w-4xl mx-auto text-center">
+      <h2 className="text-4xl sm:text-5xl font-bold text-white mb-8">
+        Ready to Take Control of Your Career?
+      </h2>
+      <p className="text-xl sm:text-2xl text-white/90 mb-12 leading-relaxed">
+        Join thousands of professionals who are building meaningful connections and finding their dream 
+        roles through direct company engagement.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Link href="/companies">
+          <Button 
+            size="lg" 
+            className="w-full sm:w-auto bg-white text-[#4F46E5] hover:bg-white/90 gap-3 px-8 py-6 text-lg font-medium"
+          >
+            <Building2 className="w-5 h-5" />
+            Explore Companies
+          </Button>
+        </Link>
+        <Link href="/people">
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="w-full sm:w-auto border-white text-white hover:bg-white/10 gap-3 px-8 py-6 text-lg font-medium"
+          >
+            <Users className="w-5 h-5" />
+            Find Connections
+          </Button>
+        </Link>
+      </div>
+    </div>
+  </div>
+</section>
+  </div>
   );
 }
 
