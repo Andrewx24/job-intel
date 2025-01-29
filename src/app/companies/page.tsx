@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { CompanyCard } from '@/components/Company-card';
 import { SearchFilters } from '@/components/Search-filter';
 import { Input } from '@/components/ui/input';
+import { Company } from '@/lib/types';
 
 export default async function CompaniesPage() {
   return (
