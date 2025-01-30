@@ -34,8 +34,8 @@ export default function Home() {
             </h1>
             {/* Core value proposition */}
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-              Stop sending applications into the void. Connect directly with growing companies 
-              and decision-makers. Discover meaningful opportunities before they become public job postings.
+            Stop sending applications into the void. Connect directly with growing companies 
+            and decision-makers. Discover meaningful opportunities before they&apos;re posted.
             </p>
             {/* Primary call-to-action buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -111,7 +111,7 @@ export default function Home() {
                 Early Access
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Discover opportunities before they're posted by identifying companies 
+                Discover opportunities before they&apos;re posted by identifying companies 
                 actively building teams and expanding operations.
               </p>
             </div>
