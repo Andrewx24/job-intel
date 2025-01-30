@@ -1,3 +1,4 @@
+// components/Company-card.tsx
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Company } from '@/lib/types';
 import { MapPin, Users, Globe, TrendingUp } from 'lucide-react';
@@ -7,6 +8,9 @@ interface CompanyCardProps {
 }
 
 export function CompanyCard({ company }: CompanyCardProps) {
+  // Format the location string from the Location object
+  const formattedLocation = `${company.location.city}, ${company.location.state}`;
+  
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
@@ -28,7 +32,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-gray-500" />
-              <span>{company.location}</span>
+              <span>{formattedLocation}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Users className="h-4 w-4 text-gray-500" />
@@ -36,8 +40,12 @@ export function CompanyCard({ company }: CompanyCardProps) {
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Globe className="h-4 w-4 text-gray-500" />
-              <a href={company.website} target="_blank" rel="noopener noreferrer" 
-                 className="text-blue-600 hover:underline">
+              <a 
+                href={company.website} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-blue-600 hover:underline"
+              >
                 Website
               </a>
             </div>
