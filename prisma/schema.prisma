@@ -1,64 +1,65 @@
 // prisma/schema.prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
 
 generator client {
   provider = "prisma-client-js"
 }
 
-// Define your models using Prisma's schema language
-model Company {
-  id          String   @id @default(cuid())
-  name        String
-  industry    Industry
-  size        CompanySize
-  location    Json     // Store city, state, country as a JSON object
-  revenue     String?
-  website     String?
-  description String?
-  
-  // Company metrics stored as JSON
-  metrics     Json     @default("{}")
-  
-  // Relationships
-  employees   Person[]
-  
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+        
 
-  // Add an index for better search performance
+model Company {
+  id                String      @id @default(cuid())
+  name              String
+  industry          Industry
+  size              CompanySize
+  location          Json        // { city: string, state: string, country: string }
+  revenue           RevenueRange?
+  website           String?
+  description       String?
+  status            Status      @default(active)
+  socialLinks       Json?       // { linkedin?: string, twitter?: string, facebook?: string }
+  metrics           Json        // { employeeCount: number, yearFounded: number, annualRevenue?: string, fundingTotal?: string }
+  verificationStatus VerificationStatus @default(unverified)
+  employees         Person[]
+  tags              String[]    @default([])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
   @@index([name])
+  @@index([industry])
+  @@index([size])
 }
 
 model Person {
-  id           String      @id @default(cuid())
-  firstName    String
-  lastName     String
-  title        String
-  email        String?     @unique
-  emailStatus  EmailStatus @default(unverified)
-  bio          String?
-  
-  // Relationships
-  company      Company     @relation(fields: [companyId], references: [id])
-  companyId    String
-  
-  // Contact and social info stored as JSON
-  contactInfo  Json        @default("{}")
-  socialLinks  Json        @default("{}")
-  
-  // Timestamps
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id            String      @id @default(cuid())
+  firstName     String
+  lastName      String
+  title         String
+  jobLevel      JobLevel
+  email         String?     @unique
+  emailStatus   EmailStatus @default(unverified)
+  bio           String?
+  imageUrl      String?
+  company       Company     @relation(fields: [companyId], references: [id])
+  companyId     String
+  location      Json        // { city: string, state: string, country: string }
+  contactInfo   Json        @default("{}") // { email?: string, phone?: string, direct?: string }
+  socialLinks   Json        @default("{}") // { linkedin?: string, twitter?: string }
+  skills        String[]    @default([])
+  interests     String[]    @default([])
+  lastActive    DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@index([firstName, lastName])
   @@index([email])
+  @@index([jobLevel])
 }
 
-// Define custom enums for type safety
 enum Industry {
   Technology
   Healthcare
@@ -78,8 +79,39 @@ enum CompanySize {
   SIZE_5000_PLUS @map("5000+")
 }
 
+enum RevenueRange {
+  LESS_THAN_1M    @map("Less than $1M")
+  FROM_1M_10M     @map("$1M-$10M")
+  FROM_10M_50M    @map("$10M-$50M")
+  FROM_50M_100M   @map("$50M-$100M")
+  FROM_100M_500M  @map("$100M-$500M")
+  FROM_500M_1B    @map("$500M-$1B")
+  MORE_THAN_1B    @map("$1B+")
+  UNKNOWN         @map("Unknown")
+}
+
 enum EmailStatus {
   verified
   unverified
   invalid
+}
+
+enum JobLevel {
+  C_LEVEL       @map("C-Level")
+  VP            @map("VP")
+  DIRECTOR      @map("Director")
+  MANAGER       @map("Manager")
+  SENIOR        @map("Senior")
+  MID_LEVEL     @map("Mid-Level")
+  ENTRY_LEVEL   @map("Entry-Level")
+}
+
+enum Status {
+  active
+  inactive
+}
+
+enum VerificationStatus {
+  verified
+  unverified
 }

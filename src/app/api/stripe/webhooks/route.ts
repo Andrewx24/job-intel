@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
-  const sig = headers().get("stripe-signature");
+  const sig = (await headers()).get("stripe-signature");
 
   try {
     const event = stripe.webhooks.constructEvent(

@@ -58,7 +58,7 @@ export function PersonCard({ person }: PersonCardProps) {
         {person.company.location && (
           <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300">
             <MapPin className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-            {person.company.location}
+            {person.company.location.toString()}
           </div>
         )}
       </CardHeader>

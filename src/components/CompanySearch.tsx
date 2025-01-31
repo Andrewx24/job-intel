@@ -9,9 +9,9 @@ import {
   Company, 
   CompanySize, 
   Industry, 
-  Location, 
+  
   RevenueRange,
-  CompanySearchParams 
+   
 } from '@/lib/types';
 import { Search, Loader2, X } from 'lucide-react';
 import {
@@ -38,66 +38,72 @@ export function CompanySearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
 
-  // Handle form submission and search
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
       setIsLoading(true);
-
-      // Build search parameters for API call
-      const searchParams: CompanySearchParams = {
-        query: searchQuery,
-        industry: filters.industry,
-        size: filters.size,
-        location: filters.city || filters.state ? {
-          city: filters.city,
-          state: filters.state,
-          country: 'United States' // Default for US companies
-        } : undefined,
-        revenue: filters.revenue,
-      };
-
-      // In production, this would be an API call
-      // const response = await fetch('/api/companies/search?' + new URLSearchParams(searchParams));
-      // const data = await response.json();
-
-      // For demonstration, create a mock company with proper types
-      const mockCompany: Company = {
-        id: '1',
-        name: 'Example Tech',
-        industry: filters.industry || 'Technology',
-        size: filters.size || '51-200',
-        location: {
-          city: filters.city || 'San Francisco',
-          state: filters.state || 'CA',
-          country: 'United States',
-        },
-        revenue: filters.revenue || '$10M-$50M',
-        website: 'https://example.com',
-        description: 'A leading technology company specializing in AI solutions.',
-        socialLinks: {
-          linkedin: 'https://linkedin.com/company/example',
-        },
-        metrics: {
-          employeeCount: 150,
-          yearFounded: 2020,
-          annualRevenue: '$10M-$50M',
-          fundingTotal: '$5M',
-          lastUpdated: new Date(),
-          growthRate: 25,
-        },
-        status: 'active',
-        verificationStatus: 'verified',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setCompanies([mockCompany]);
+  
+      // Build params object
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('query', searchQuery);
+      if (filters.industry) params.append('industry', filters.industry);
+      if (filters.size) params.append('size', filters.size);
+      if (filters.revenue) params.append('revenue', filters.revenue);
+      if (filters.city) params.append('city', filters.city);
+      if (filters.state) params.append('state', filters.state);
+  
+      try {
+        // Attempt API call
+        const response = await fetch(`/api/companies/search?${params}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch companies');
+        }
+  
+        const data = await response.json();
+        setCompanies(data.companies);
+      } catch (apiError) {
+        console.error('API call failed, using mock data:', apiError);
+        
+        // Fallback to mock data
+        const mockCompany: Company = {
+          id: '1',
+          name: 'Example Tech',
+          industry: filters.industry || 'Technology',
+          size: filters.size || '51-200',
+          location: {
+            city: filters.city || 'San Francisco',
+            state: filters.state || 'CA',
+            country: 'United States',
+          },
+          revenue: filters.revenue || '$10M-$50M',
+          website: 'https://example.com',
+          description: 'A leading technology company specializing in AI solutions.',
+          socialLinks: {
+            linkedin: 'https://linkedin.com/company/example',
+          },
+          metrics: {
+            employeeCount: 150,
+            yearFounded: 2020,
+            annualRevenue: '$10M-$50M',
+            fundingTotal: '$5M',
+            lastUpdated: new Date(),
+            growthRate: 25,
+          },
+          status: 'active',
+          verificationStatus: 'verified',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+  
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setCompanies([mockCompany]);
+      }
     } catch (error) {
       console.error('Search error:', error);
+      setCompanies([]); // Clear results on error
     } finally {
       setIsLoading(false);
     }
