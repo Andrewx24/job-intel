@@ -1,12 +1,19 @@
+// components/CompanySearch.tsx
 "use client";
 
-// components/CompanySearch.tsx
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CompanyCard } from '@/components/Company-card';
-import { Company, CompanySize, Industry } from '@/lib/types';
-import { Search, Loader2 } from 'lucide-react';
+import { 
+  Company, 
+  CompanySize, 
+  Industry, 
+  Location, 
+  RevenueRange,
+  CompanySearchParams 
+} from '@/lib/types';
+import { Search, Loader2, X } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -15,44 +22,58 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+// Define our local search filters interface
 interface SearchFilters {
   industry?: Industry;
   size?: CompanySize;
-  location?: string;
+  city?: string;
+  state?: string;
+  revenue?: RevenueRange;
 }
 
 export function CompanySearch() {
+  // State management for search functionality
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<SearchFilters>({});
   const [isLoading, setIsLoading] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
 
+  // Handle form submission and search
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
       setIsLoading(true);
 
-      // Build search parameters
-      const params = new URLSearchParams();
-      if (searchQuery) params.append('q', searchQuery);
-      if (filters.industry) params.append('industry', filters.industry);
-      if (filters.size) params.append('size', filters.size);
-      if (filters.location) params.append('location', filters.location);
+      // Build search parameters for API call
+      const searchParams: CompanySearchParams = {
+        query: searchQuery,
+        industry: filters.industry,
+        size: filters.size,
+        location: filters.city || filters.state ? {
+          city: filters.city,
+          state: filters.state,
+          country: 'United States' // Default for US companies
+        } : undefined,
+        revenue: filters.revenue,
+      };
 
-      // In a real application, make the API call
-      // const response = await fetch(`/api/companies/search?${params}`);
+      // In production, this would be an API call
+      // const response = await fetch('/api/companies/search?' + new URLSearchParams(searchParams));
       // const data = await response.json();
-      // setCompanies(data.companies);
 
-      // For demonstration, using mock data
+      // For demonstration, create a mock company with proper types
       const mockCompany: Company = {
         id: '1',
         name: 'Example Tech',
         industry: filters.industry || 'Technology',
         size: filters.size || '51-200',
-        location: filters.location || 'San Francisco, CA',
-        revenue: '$10M-$50M',
+        location: {
+          city: filters.city || 'San Francisco',
+          state: filters.state || 'CA',
+          country: 'United States',
+        },
+        revenue: filters.revenue || '$10M-$50M',
         website: 'https://example.com',
         description: 'A leading technology company specializing in AI solutions.',
         socialLinks: {
@@ -61,13 +82,18 @@ export function CompanySearch() {
         metrics: {
           employeeCount: 150,
           yearFounded: 2020,
-          annualRevenue: '$25M',
+          annualRevenue: '$10M-$50M',
           fundingTotal: '$5M',
+          lastUpdated: new Date(),
+          growthRate: 25,
         },
+        status: 'active',
+        verificationStatus: 'verified',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
+      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       setCompanies([mockCompany]);
     } catch (error) {
@@ -77,10 +103,19 @@ export function CompanySearch() {
     }
   };
 
+  // Clear all filters
+  const clearFilters = () => {
+    setFilters({});
+    setSearchQuery('');
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = searchQuery || Object.values(filters).some(value => value !== undefined);
+
   return (
     <div className="space-y-6">
       <form onSubmit={handleSearch} className="space-y-4">
-        {/* Search Input and Button */}
+        {/* Search Bar and Submit Button */}
         <div className="flex gap-4 items-start">
           <div className="flex-1">
             <Input
@@ -101,8 +136,9 @@ export function CompanySearch() {
           </Button>
         </div>
 
-        {/* Filters */}
+        {/* Advanced Filters Section */}
         <div className="flex flex-wrap gap-4">
+          {/* Industry Filter */}
           <Select
             value={filters.industry}
             onValueChange={(value: Industry) => 
@@ -119,9 +155,11 @@ export function CompanySearch() {
               <SelectItem value="Manufacturing">Manufacturing</SelectItem>
               <SelectItem value="Retail">Retail</SelectItem>
               <SelectItem value="Education">Education</SelectItem>
+              <SelectItem value="Other">Other</SelectItem>
             </SelectContent>
           </Select>
 
+          {/* Company Size Filter */}
           <Select
             value={filters.size}
             onValueChange={(value: CompanySize) => 
@@ -141,13 +179,55 @@ export function CompanySearch() {
             </SelectContent>
           </Select>
 
+          {/* Location Filters */}
           <Input
             type="text"
-            placeholder="Location (City, State)"
-            value={filters.location || ''}
-            onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-            className="w-[200px]"
+            placeholder="City"
+            value={filters.city || ''}
+            onChange={(e) => setFilters(prev => ({ ...prev, city: e.target.value }))}
+            className="w-[150px]"
           />
+          <Input
+            type="text"
+            placeholder="State"
+            value={filters.state || ''}
+            onChange={(e) => setFilters(prev => ({ ...prev, state: e.target.value }))}
+            className="w-[100px]"
+          />
+
+          {/* Revenue Filter */}
+          <Select
+            value={filters.revenue}
+            onValueChange={(value: RevenueRange) => 
+              setFilters(prev => ({ ...prev, revenue: value }))
+            }
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Revenue Range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Less than $1M">Less than $1M</SelectItem>
+              <SelectItem value="$1M-$10M">$1M-$10M</SelectItem>
+              <SelectItem value="$10M-$50M">$10M-$50M</SelectItem>
+              <SelectItem value="$50M-$100M">$50M-$100M</SelectItem>
+              <SelectItem value="$100M-$500M">$100M-$500M</SelectItem>
+              <SelectItem value="$500M-$1B">$500M-$1B</SelectItem>
+              <SelectItem value="$1B+">$1B+</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <Button 
+              type="button" 
+              variant="ghost" 
+              onClick={clearFilters}
+              className="text-sm"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Clear Filters
+            </Button>
+          )}
         </div>
       </form>
 
@@ -168,7 +248,7 @@ export function CompanySearch() {
       )}
 
       {/* Empty State */}
-      {!isLoading && companies.length === 0 && searchQuery && (
+      {!isLoading && companies.length === 0 && hasActiveFilters && (
         <div className="text-center py-8">
           <p className="text-lg text-gray-600 dark:text-gray-300">
             No companies found matching your search criteria.

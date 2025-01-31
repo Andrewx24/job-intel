@@ -63,10 +63,10 @@ export interface SocialLinks {
 // Location information structure
 export interface Location {
   street?: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode?: string;
+  city: string;      // Required
+  state: string;     // Required
+  country: string;   // Required
+  postalCode?: string
 }
 
 // Company metrics tracking structure
