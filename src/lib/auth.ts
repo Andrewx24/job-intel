@@ -1,21 +1,11 @@
 import NextAuth from "next-auth"
 import authConfig from "./auth.config"
-import { PrismaClient } from "@prisma/client"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-
-const prisma = new PrismaClient()
+import { prisma } from "./prisma" // Import our singleton Prisma instance
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
-  pages: { signIn: "/signin" },
-  debug: true, // This will help us see detailed errors in production
-  callbacks: {
-    async signIn({ user, account }) {
-      // Add logging to help debug production issues
-      console.log('Sign in attempt:', { user, account })
-      return true
-    }
-  },
+  session: { strategy: "jwt" }, // Using JWT strategy for better edge compatibility
+  debug: process.env.NODE_ENV === "development",
   ...authConfig,
 })

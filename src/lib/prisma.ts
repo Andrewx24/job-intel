@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from "@prisma/client"
 
-const globalForPrisma = global as unknown as {
-  prisma: PrismaClient | undefined
-}
+// This prevents multiple instances of Prisma Client in development
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+// Create a single instance of Prisma Client
+export const prisma = globalForPrisma.prisma || new PrismaClient()
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+// In development, we want to keep the same instance between hot reloads
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma

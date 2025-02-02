@@ -1,15 +1,24 @@
 // prisma/schema.prisma
+
+// Configure the Prisma client with optimizations for edge runtime environments
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // Enable preview features for better foreign key handling
+  previewFeatures = ["referentialIntegrity"]
+  // Optimize for edge runtime compatibility
+  engineType      = "binary"
 }
 
+// Database configuration with support for connection pooling
 datasource db {
   provider  = "postgresql"
+  // Main connection URL (can use connection pooling)
   url       = env("DATABASE_URL")
+  // Direct database connection for operations that need it
   directUrl = env("DIRECT_URL")
 }
 
-// NextAuth Models
+// NextAuth.js Required Models
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
@@ -27,6 +36,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId]) // Optimize queries that look up accounts by user
   @@map("accounts")
 }
 
@@ -37,6 +47,7 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId]) // Optimize session lookups by user
   @@map("sessions")
 }
 
@@ -48,8 +59,9 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  person        Person?   // Relation to Person model
+  person        Person?   // One-to-one relation with Person model
 
+  @@index([email]) // Optimize user lookups by email
   @@map("users")
 }
 
@@ -62,28 +74,49 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// Your Application Models
+// Application-specific Models
 model Company {
   id                String             @id @default(cuid())
   name              String
   industry          Industry
   size              CompanySize
-  location          Json               // { city: string, state: string, country: string }
+  // Structured JSON for flexible location data
+  location          Json               // {
+                                      //   city: string,
+                                      //   state: string,
+                                      //   country: string,
+                                      //   coordinates?: { lat: number, lng: number }
+                                      // }
   revenue           RevenueRange?
   website           String?
   description       String?
-  status            Status            @default(active)
-  socialLinks       Json?             // { linkedin?: string, twitter?: string, facebook?: string }
-  metrics           Json              // { employeeCount: number, yearFounded: number, annualRevenue?: string, fundingTotal?: string }
+  status            Status             @default(active)
+  // Structured JSON for social media links
+  socialLinks       Json?              // {
+                                      //   linkedin?: string,
+                                      //   twitter?: string,
+                                      //   facebook?: string,
+                                      //   instagram?: string
+                                      // }
+  // Structured JSON for company metrics
+  metrics           Json               // {
+                                      //   employeeCount: number,
+                                      //   yearFounded: number,
+                                      //   annualRevenue?: string,
+                                      //   fundingTotal?: string,
+                                      //   lastUpdated: string
+                                      // }
   verificationStatus VerificationStatus @default(unverified)
   employees         Person[]
-  tags              String[]          @default([])
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  tags              String[]           @default([])
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
+  // Optimize common query patterns
   @@index([name])
   @@index([industry])
   @@index([size])
+  @@index([status, verificationStatus]) // Composite index for filtered queries
   @@map("companies")
 }
 
@@ -99,9 +132,27 @@ model Person {
   imageUrl      String?
   company       Company     @relation(fields: [companyId], references: [id])
   companyId     String
-  location      Json        // { city: string, state: string, country: string }
-  contactInfo   Json        @default("{}") // { email?: string, phone?: string, direct?: string }
-  socialLinks   Json        @default("{}") // { linkedin?: string, twitter?: string }
+  // Structured JSON for location data
+  location      Json        // {
+                           //   city: string,
+                           //   state: string,
+                           //   country: string,
+                           //   coordinates?: { lat: number, lng: number }
+                           // }
+  // Structured JSON for contact information
+  contactInfo   Json        @default("{}") // {
+                                          //   email?: string,
+                                          //   phone?: string,
+                                          //   direct?: string,
+                                          //   preferredContact?: string
+                                          // }
+  // Structured JSON for social media profiles
+  socialLinks   Json        @default("{}") // {
+                                          //   linkedin?: string,
+                                          //   twitter?: string,
+                                          //   github?: string,
+                                          //   portfolio?: string
+                                          // }
   skills        String[]    @default([])
   interests     String[]    @default([])
   lastActive    DateTime?
@@ -110,13 +161,16 @@ model Person {
   user          User?       @relation(fields: [userId], references: [id])
   userId        String?     @unique // One-to-one relation with User
 
+  // Optimize common query patterns
   @@index([firstName, lastName])
   @@index([email])
   @@index([jobLevel])
+  @@index([companyId]) // Optimize company relationship queries
+  @@index([userId])    // Optimize user relationship queries
   @@map("people")
 }
 
-// Enums
+// Enums with human-readable mappings
 enum Industry {
   Technology
   Healthcare
