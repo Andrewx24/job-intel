@@ -9,21 +9,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   pages: { signIn: "/signin" },
-  debug: true,
+  debug: true, // This will help us see detailed errors in production
   callbacks: {
-    authorized({ request, auth }) {
-      const { pathname } = request.nextUrl
-      if (pathname.startsWith("/protected")) return !!auth
+    async signIn({ user, account }) {
+      // Add logging to help debug production issues
+      console.log('Sign in attempt:', { user, account })
       return true
-    },
-    async session({ session }) {  // Removed unused token parameter
-      return session
-    },
-    async jwt({ token, account }) {
-      if (account) {
-        token.accessToken = account.access_token
-      }
-      return token
     }
   },
   ...authConfig,

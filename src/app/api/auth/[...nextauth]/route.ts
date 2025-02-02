@@ -1,3 +1,4 @@
-import { handlers } from "@/lib/auth" // Referring to the auth.ts we just created
+import { handlers } from "@/lib/auth"
+
+// Export the handlers but don't force edge runtime
 export const { GET, POST } = handlers
-export const runtime = "edge" // optional
