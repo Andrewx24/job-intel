@@ -45,12 +45,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          defer
-          data-website-id="679aa15abd3ba6a340f22681"
-          data-domain="job-intel.vercel.app"
-          src="https://datafa.st/js/script.js"
-        />
+      <script
+  defer
+  data-website-id="67a1566a3612eb9ba9789c2e"
+  data-domain="www.jobintel.app"
+  src="https://datafa.st/js/script.js">
+</script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
